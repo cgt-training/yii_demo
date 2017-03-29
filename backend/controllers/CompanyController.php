@@ -55,6 +55,11 @@ class CompanyController extends Controller
      * Lists all Company models.
      * @return mixed
      */
+
+     // return $this->render('index', [
+     //        'searchModel' => $searchModel,
+     //        'dataProvider' => $dataProvider,
+     //    ]);
     public function actionIndex()
     {
         $searchModel = new CompanySearch();
