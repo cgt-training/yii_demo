@@ -4,11 +4,13 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
-/* @var $searchModel backend\models\CompanySearch */
+/* @var $searchModel backend\models\UserSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-$this->title = 'Companies';
+
+$this->title = 'Users';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="content">
     <div class="container-fluid">
         <div class="row">
@@ -21,34 +23,41 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <div class="card-content table-responsive">
 
-                        <?php if(Yii::$app->session->hasFlash('Warning')){ ?>
+                        <?php if(Yii::$app->session->hasFlash('warning')){ ?>
                             <div class="alert alert-warning">
                                 <button type="button" aria-hidden="true" class="close">×</button>
                                 <span><b> Warning - </b>  <?= Yii::$app->session->getFlash('warning');?> </span>
                             </div>    
                         <?php } ?>
 
-                        <p><?= Html::a('Create Company', ['create'], ['class' => 'btn btn-success']) ?></p>
+                        <p><?= Html::a('Create User', ['create'], ['class' => 'btn btn-success']) ?></p>
+
+                        
 
                         <?php Pjax::begin(); ?>    
-
                         <?= GridView::widget([
-                            'dataProvider' => $dataProvider,
-                            'filterModel' => $searchModel,
-                            'columns' => [
-                                ['class' => 'yii\grid\SerialColumn'],
-                                'company_id',
-                                'company_name',
-                                'company_email:email',
-                                'company_address',
-                                'company_create_date',
-                                // 'company_status',
-                                // 'registration_date',
-                                // 'logo',
+                                'dataProvider' => $dataProvider,
+                                'filterModel' => $searchModel,
+                                'columns' => [
+                                    ['class' => 'yii\grid\SerialColumn'],
 
-                                ['class' => 'yii\grid\ActionColumn'],
-                            ],
-                        ]); ?>
+                                    'id',
+                                    'username',
+                                    'role',
+                                    'auth_key',
+                                    //'password_hash',
+                                    //'password_reset_token',
+                                     'email:email',
+                                     'status',
+                                     'created_at',
+                                     'updated_at',
+
+                                    ['class' => 'yii\grid\ActionColumn'],
+                                ],
+                            ]); ?>
+
+
+
                     <?php Pjax::end(); ?>
                         
                     </div>
@@ -57,5 +66,3 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
-
- 

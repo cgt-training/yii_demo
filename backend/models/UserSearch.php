@@ -5,12 +5,12 @@ namespace backend\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Company;
+use app\models\User;
 
 /**
- * CompanySearch represents the model behind the search form about `app\models\Company`.
+ * UserSearch represents the model behind the search form about `app\models\User`.
  */
-class CompanySearch extends Company
+class UserSearch extends User
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class CompanySearch extends Company
     public function rules()
     {
         return [
-            [['company_id'], 'integer'],
-            [['company_name', 'company_email', 'company_address', 'company_create_date', 'company_status', 'registration_date', 'logo'], 'safe'],
+            [['id', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['username', 'auth_key', 'password_hash', 'password_reset_token', 'email'], 'safe'],
         ];
     }
 
@@ -41,15 +41,12 @@ class CompanySearch extends Company
      */
     public function search($params)
     {
-        $query = Company::find();
+        $query = User::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-                'pagination' => [
-                    'pageSize' => 10,
-                ],
         ]);
 
         $this->load($params);
@@ -62,16 +59,17 @@ class CompanySearch extends Company
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'company_id' => $this->company_id,
-            'company_create_date' => $this->company_create_date,
-            'registration_date' => $this->registration_date,
+            'id' => $this->id,
+            'status' => $this->status,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'company_name', $this->company_name])
-            ->andFilterWhere(['like', 'company_email', $this->company_email])
-            ->andFilterWhere(['like', 'company_address', $this->company_address])
-            ->andFilterWhere(['like', 'company_status', $this->company_status])
-            ->andFilterWhere(['like', 'logo', $this->logo]);
+        $query->andFilterWhere(['like', 'username', $this->username])
+            ->andFilterWhere(['like', 'auth_key', $this->auth_key])
+            ->andFilterWhere(['like', 'password_hash', $this->password_hash])
+            ->andFilterWhere(['like', 'password_reset_token', $this->password_reset_token])
+            ->andFilterWhere(['like', 'email', $this->email]);
 
         return $dataProvider;
     }

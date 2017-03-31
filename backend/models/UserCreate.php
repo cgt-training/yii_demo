@@ -1,5 +1,5 @@
 <?php
-namespace frontend\models;
+namespace backend\models;
 
 use yii\base\Model;
 use common\models\User;
@@ -7,12 +7,13 @@ use common\models\User;
 /**
  * Signup form
  */
-class SignupForm extends Model
+class UserCreate extends Model
 {
     public $username;
     public $email;
     public $password;
-
+    public $status;
+    public $role;
 
     /**
      * @inheritdoc
@@ -33,6 +34,10 @@ class SignupForm extends Model
 
             ['password', 'required'],
             ['password', 'string', 'min' => 6],
+
+
+            ['status', 'required'],
+            ['role', 'safe'],
         ];
     }
 
@@ -47,14 +52,16 @@ class SignupForm extends Model
             return null;
         }
         
+
+
         $user = new User();
         $user->username = $this->username;
         $user->email = $this->email;
         $user->role = $this->role;
         $user->status = $this->status;
         $user->setPassword($this->password);
-        $user->generateAuthKey();
-        
-        return $user->save() ? $user : null;
+        $user->generateAuthKey(); 
+
+        return $user->save(false) ? $user : null;
     }
 }

@@ -41,17 +41,6 @@ class SiteController extends Controller
                         'actions' => [
                             'logout',
                              'index',
-                             'profile',
-                             'table',
-                             'typography',
-                             'icons',
-                             'maps',
-                             'notifications',
-                             'users',
-                             'company',
-                             'department',
-                             'branch',
-                             'user',
                          ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -76,23 +65,12 @@ class SiteController extends Controller
      */
     public function actions()
     {
-       
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
             ],
         ];
     }
-
-
-   
-    public function actionError(){
-
-
-
-    }
-
-
 
     /**
      * Displays homepage.
@@ -105,88 +83,6 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
-
-     /**
-     * Displays homepage.
-     *
-     * @return string
-     */
-    public function actionTypography()
-    {
-        return $this->render('typography');
-    }
-
-
-    public function actionProfile()
-    {
-        return $this->render('profile');
-    }
-
-
-    public function actionTable()
-    {
-        return $this->render('table');
-    }
-
-    public function actionIcons()
-    {
-        return $this->render('icons');
-    }
-
-
-    public function actionMaps()
-    {
-        return $this->render('maps');
-    }
-
-
-    public function actionNotifications()
-    {
-        return $this->render('notifications');
-    }
-
-    public function actionUsers()
-    {
-
-         $model = new User();
-
-        if ($model->load(Yii::$app->request->post())) {
-            if ($model->validate()) {
-                // form inputs are valid, do something here
-                return;
-            }
-        }
-
-        return $this->render('users', [
-            'model' => $model,
-        ]);
-
-
-    }
-
-
-
-    public function actionCity()
-    {
-
-        $model = new frontend\models\City();
-
-        if ($model->load(Yii::$app->request->post())) {
-            if ($model->validate()) {
-                // form inputs are valid, do something here
-                return;
-            }
-        }
-
-        return $this->render('City', [
-            'model' => $model,
-        ]);
-    }
-
-
-
-
-
     /**
      * Login action.
      *
@@ -194,6 +90,7 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+
 
          $this->layout = 'guest.php';
 
@@ -222,6 +119,7 @@ class SiteController extends Controller
     }
 
 
+
     public function actionSignup()
     {
 
@@ -241,61 +139,12 @@ class SiteController extends Controller
                     $formMessage = $model->getErrors();
             }
         }
-    
-
-
-    /*    if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->signup()) {
-                if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
-                }
-            }
-        }
-
-
-        prd($model->getErrors());
-
-*/
         return $this->render('signup', [
             'model' => $model,
             'formMessage'=> $formMessage
         ]);
     }
 
-
-
-
-    /*  -- All-- Backup (Before GII Creation)  */
-
-    public function actionCompany(){
-        return $this->render('company',[
-            'model' => new CompanySearch()
-            ]);
-    }
-
-    public function actionBranch(){
-        return $this->render('branch',[
-            'model' => new BranchSearch()
-            ]);
-    }
-
-    public function actionDepartment(){
-        return $this->render('department',[
-            'model' => new DepartmentSearch()
-            ]);
-    }
-
-    public function actionUser(){
-        return $this->render('user',[
-            'model' => new User()
-            ]);
-    }
-
-
-
-
-
- 
 
     /**
      * Logout action.
@@ -304,10 +153,7 @@ class SiteController extends Controller
      */
     public function actionLogout()
     {
-
-
         Yii::$app->user->logout();
-
         return $this->goHome();
     }
 }

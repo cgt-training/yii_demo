@@ -1,21 +1,19 @@
 <?php
 
-namespace backend\controllers;
+namespace backend\modules\company\controllers;
 
 use Yii;
-use yii\web\Controller;
-use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-
-use app\models\Branch;
-use backend\models\BranchSearch;
+use app\models\Department;
+use backend\models\DepartmentSearch;
+use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-
+use yii\filters\VerbFilter;
 
 /**
- * BranchController implements the CRUD actions for Branch model.
+ * DepartmentController implements the CRUD actions for Department model.
  */
-class BranchController extends Controller
+class DepartmentController extends Controller
 {
     /**
      * @inheritdoc
@@ -28,14 +26,17 @@ class BranchController extends Controller
                 'rules' => [
                     [
                         'actions' => [],
+                        'roles' => ['@'],
                         'allow' => true,
                         'matchCallback' => function ($rule, $action) {
-                             if(in_array($action->id,array("create","update","delete")))
+                            if(in_array($action->id,array("create","update","delete")))
                                 if(!Yii::$app->user->can(ucfirst($action->controller->id).ucfirst($action->id))){
                                      Yii::$app->session->setFlash('warning', 'You are not allowed to perform this action!');
-                                     $action->controller->redirect('index');
-                                     return false;
+                                     return $action->controller->redirect('index');
+                                     //return false;
+
                                 }
+                                    
                             return true;
                         }
                     ]
@@ -51,12 +52,12 @@ class BranchController extends Controller
     }
 
     /**
-     * Lists all Branch models.
+     * Lists all Department models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new BranchSearch();
+        $searchModel = new DepartmentSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -66,7 +67,7 @@ class BranchController extends Controller
     }
 
     /**
-     * Displays a single Branch model.
+     * Displays a single Department model.
      * @param integer $id
      * @return mixed
      */
@@ -78,50 +79,25 @@ class BranchController extends Controller
     }
 
     /**
-     * Creates a new Branch model.
+     * Creates a new Department model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Branch();
+        $model = new Department();
 
-
-        
-        //gcm(Yii::$app->user);
-        //prd(Yii::$app->user->getIdentity());
-
-        //Yii::$app->user->can
-        if(1 or Yii::$app->user->can('Create Branch')){
-
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->branch_id]);
-            } else {
-                return $this->render('create', [
-                    'model' => $model,
-                ]);
-            }
-
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->dept_id]);
+        } else {
+            return $this->render('create', [
+                'model' => $model,
+            ]);
         }
-
-
-        $searchModel = new BranchSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-
-
-
-        
     }
 
     /**
-     * Updates an existing Branch model.
+     * Updates an existing Department model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -131,7 +107,7 @@ class BranchController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->branch_id]);
+            return $this->redirect(['view', 'id' => $model->dept_id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -140,7 +116,7 @@ class BranchController extends Controller
     }
 
     /**
-     * Deletes an existing Branch model.
+     * Deletes an existing Department model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -152,34 +128,16 @@ class BranchController extends Controller
         return $this->redirect(['index']);
     }
 
-
-
-    public function actionList($id)
-    {
-        
-       $data = Branch::find()->where(['company_id'=>$id])->all();
-
-
-       if(!count($data))
-        echo '<option value="">No Branch Available</option>';
-
-        foreach ($data as $key => $value) {
-            echo '<option value="'.$value->branch_id.'">'.$value->branch_name.'</option>';
-        }
-
-    }
-    
-
     /**
-     * Finds the Branch model based on its primary key value.
+     * Finds the Department model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Branch the loaded model
+     * @return Department the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Branch::findOne($id)) !== null) {
+        if (($model = Department::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

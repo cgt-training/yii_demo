@@ -1,19 +1,20 @@
 <?php
 
-namespace backend\controllers;
+namespace backend\modules\user\controllers;
 
 use Yii;
+use app\models\User;
+use backend\models\UserCreate;
 use yii\filters\AccessControl;
-use app\models\Company;
-use backend\models\CompanySearch;
+use backend\models\UserSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * CompanyController implements the CRUD actions for Company model.
+ * UserController implements the CRUD actions for User model.
  */
-class CompanyController extends Controller
+class UserController extends Controller
 {
     /**
      * @inheritdoc
@@ -27,19 +28,8 @@ class CompanyController extends Controller
                     [
                         'actions' => [],
                         'allow' => true,
-                        'matchCallback' => function ($rule, $action) {
-                            if(in_array($action->id,array("create","update","delete")))
-                               if(!Yii::$app->user->can(ucfirst($action->controller->id).ucfirst($action->id))){
-                                     Yii::$app->session->setFlash('warning', 'You are not allowed to perform this action!');
-                                     $action->controller->redirect('index');
-                                     return false;
-                                }
-                                    
-                            return true;
-                        }
+                        'roles' => ['@'],
                     ]
-
-
                 ],
             ],
             'verbs' => [
@@ -52,17 +42,12 @@ class CompanyController extends Controller
     }
 
     /**
-     * Lists all Company models.
+     * Lists all User models.
      * @return mixed
      */
-
-     // return $this->render('index', [
-     //        'searchModel' => $searchModel,
-     //        'dataProvider' => $dataProvider,
-     //    ]);
     public function actionIndex()
     {
-        $searchModel = new CompanySearch();
+        $searchModel = new UserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -72,7 +57,7 @@ class CompanyController extends Controller
     }
 
     /**
-     * Displays a single Company model.
+     * Displays a single User model.
      * @param integer $id
      * @return mixed
      */
@@ -84,25 +69,38 @@ class CompanyController extends Controller
     }
 
     /**
-     * Creates a new Company model.
+     * Creates a new User model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Company();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->company_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        $model = new UserCreate();
+
+        $formMessage = false;
+
+        if(Yii::$app->request->post()){
+
+            if($model->load(Yii::$app->request->post()) && $user = $model->create()){
+
+        
+                return $this->redirect(['index']);
+
+
+            }else{
+                    $formMessage = $model->getErrors();
+            }
         }
+
+        return $this->render('create', [
+            'model' => $model,
+            'formMessage'=> $formMessage
+        ]);
     }
 
     /**
-     * Updates an existing Company model.
+     * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -112,7 +110,7 @@ class CompanyController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->company_id]);
+            return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -121,7 +119,7 @@ class CompanyController extends Controller
     }
 
     /**
-     * Deletes an existing Company model.
+     * Deletes an existing User model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -134,15 +132,15 @@ class CompanyController extends Controller
     }
 
     /**
-     * Finds the Company model based on its primary key value.
+     * Finds the User model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Company the loaded model
+     * @return User the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Company::findOne($id)) !== null) {
+        if (($model = User::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

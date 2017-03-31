@@ -6,7 +6,7 @@ use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\CompanySearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-$this->title = 'Branches';
+$this->title = 'Companies';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="content">
@@ -21,7 +21,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <div class="card-content table-responsive">
 
-                        <p><?= Html::a('Create Branch', ['create'], ['class' => 'btn btn-success']) ?></p>
+                        <?php if(Yii::$app->session->hasFlash('warning')){ ?>
+                            <div class="alert alert-warning">
+                                <button type="button" aria-hidden="true" class="close">×</button>
+                                <span><b> Warning - </b>  <?= Yii::$app->session->getFlash('warning');?> </span>
+                            </div>    
+                        <?php } ?>
+
+                        <p><?= Html::a('Create Company', ['create'], ['class' => 'btn btn-success']) ?></p>
 
                         <?php Pjax::begin(); ?>    
 
@@ -29,14 +36,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             'dataProvider' => $dataProvider,
                             'filterModel' => $searchModel,
                             'columns' => [
-                                //['class' => 'yii\grid\SerialColumn'],
-
-                                ['attribute'=>'branch_id','value'=>'branch_id'],
-                                ['attribute'=>'company_name','value'=>'company.company_name'],
-                                'branch_name',
-                                'branch_address',
-                                'branch_create_date',
-                                 'branch_status',
+                                ['class' => 'yii\grid\SerialColumn'],
+                                'company_id',
+                                'company_name',
+                                'company_email:email',
+                                'company_address',
+                                'company_create_date',
+                                // 'company_status',
+                                // 'registration_date',
+                                // 'logo',
 
                                 ['class' => 'yii\grid\ActionColumn'],
                             ],
@@ -50,4 +58,4 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 
-
+ 

@@ -1,19 +1,20 @@
 <?php
 
-namespace backend\controllers;
+namespace backend\modules\access\controllers;
 
 use Yii;
+use app\models\AuthItem;
 use yii\filters\AccessControl;
-use app\models\Department;
-use backend\models\DepartmentSearch;
+use backend\models\AuthItemSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\AuthItemChild;
 
 /**
- * DepartmentController implements the CRUD actions for Department model.
+ * AccessController implements the CRUD actions for AuthItem model.
  */
-class DepartmentController extends Controller
+class ManageController extends Controller
 {
     /**
      * @inheritdoc
@@ -27,22 +28,12 @@ class DepartmentController extends Controller
                     [
                         'actions' => [],
                         'allow' => true,
-                        'matchCallback' => function ($rule, $action) {
-                            if(in_array($action->id,array("create","update","delete")))
-                                if(!Yii::$app->user->can(ucfirst($action->controller->id).ucfirst($action->id))){
-                                     Yii::$app->session->setFlash('warning', 'You are not allowed to perform this action!');
-                                     
-                                     
-                                     $action->controller->redirect('index');
-                                     return false;
-
-                                }
-                                    
-                            return true;
-                        }
-                    ]
+                        'roles' => ['@'],
+                    ],
+                    
                 ],
             ],
+
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -52,24 +43,67 @@ class DepartmentController extends Controller
         ];
     }
 
+
+
+
+
     /**
-     * Lists all Department models.
+     * Lists all AuthItem models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new DepartmentSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $searchModel = new AuthItemSearch();
+
+
+
+        $connection = Yii::$app->getDb();
+        $command = $connection->createCommand("select name,GROUP_CONCAT(child) as all_permissions from auth_item inner join auth_item_child on parent=name where type = 1 group by parent order by name  ");
+        $rolePermissions = $command->queryAll();
+
+     
+
+ 
+
+
+
+
+
+
+        $requestParam['AuthItemSearch']['type'] = "1";
+        $dataProvider_role = $searchModel->search($requestParam);
+
+        $requestParam['AuthItemSearch']['type'] = "2";
+        $dataProvider_permission = $searchModel->search($requestParam);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+            'dataProvider_role' => $dataProvider_role,
+            'dataProvider_permission' => $dataProvider_permission,
+            'rolePermissions' => $rolePermissions,
         ]);
     }
 
+
+    public function actionRolePermissions()
+    {
+
+        $model = new AuthItemChild();   
+
+        if ($model->load(Yii::$app->request->post()))
+            if ($model->validate() && $model->save()) 
+                return $this->redirect(['index']);
+
+        return $this->render('role-permissions', [
+            'model' => $model,
+        ]);
+    } 
+
+ 
+
     /**
-     * Displays a single Department model.
-     * @param integer $id
+     * Displays a single AuthItem model.
+     * @param string $id
      * @return mixed
      */
     public function actionView($id)
@@ -80,16 +114,16 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Creates a new Department model.
+     * Creates a new AuthItem model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Department();
+        $model = new AuthItem();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->dept_id]);
+            return $this->redirect(['view', 'id' => $model->name]);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -97,10 +131,11 @@ class DepartmentController extends Controller
         }
     }
 
+
     /**
-     * Updates an existing Department model.
+     * Updates an existing AuthItem model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
+     * @param string $id
      * @return mixed
      */
     public function actionUpdate($id)
@@ -108,7 +143,7 @@ class DepartmentController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->dept_id]);
+            return $this->redirect(['view', 'id' => $model->name]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -117,9 +152,9 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Deletes an existing Department model.
+     * Deletes an existing AuthItem model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
+     * @param string $id
      * @return mixed
      */
     public function actionDelete($id)
@@ -130,15 +165,15 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Finds the Department model based on its primary key value.
+     * Finds the AuthItem model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Department the loaded model
+     * @param string $id
+     * @return AuthItem the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Department::findOne($id)) !== null) {
+        if (($model = AuthItem::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

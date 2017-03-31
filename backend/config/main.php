@@ -11,7 +11,27 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
-    'modules' => [],
+    'modules' => [
+        'company' => [
+            'class' => 'backend\modules\company\company',
+            'defaultRoute' => 'company',
+            
+        ],
+        'theme' => [
+            'class' => 'backend\modules\theme\theme',
+        ],
+        'user' => [
+            'class' => 'backend\modules\user\user',
+            'defaultRoute' => 'user',
+        ],
+        'access' => [
+            'class' => 'backend\modules\access\access',
+            'defaultRoute' => 'manage',
+        ],
+    ],
+
+
+    
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
@@ -24,6 +44,8 @@ return [
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
+
+        
         'session' => [
             // this is the name of the session cookie used for login on the backend
             'name' => 'advanced-backend',
